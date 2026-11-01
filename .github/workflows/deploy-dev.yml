@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  MOD_FILE: moddev.jar   # nom fixe sur le serveur (évite les doublons de version)
+  MOD_FILE: ModDevARPG.jar   # nom fixe sur le serveur (évite les doublons de version)
 
 jobs:
   deploy:
