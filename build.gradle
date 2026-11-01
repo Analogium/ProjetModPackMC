@@ -39,7 +39,12 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 neoForge {
     // Specify the version of NeoForge to use.
-    version = project.neo_version
+    enable {
+        version = project.neo_version
+        // Skips decompiling Minecraft, which needs more memory than an 8 GB Codespace has available.
+        // Remove this to get the Minecraft sources in the IDE on a machine with more RAM.
+        disableRecompilation = true
+    }
 
     parchment {
         mappingsVersion = project.parchment_mappings_version
