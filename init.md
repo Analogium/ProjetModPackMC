@@ -178,7 +178,9 @@ Le MCP Minestrator est configuré pour Codex dans `.claude/config.toml` et pour
 Claude Code dans `.mcp.json`. La clé vient de `MINESTRATOR_API_KEY`, chargée
 depuis un `.env` local ignoré par Git avant de lancer le client ; suivre la
 [procédure MCP](docs/infrastructure/README.md#configuration-locale-du-mcp).
-La configuration est reconnue par Codex ; l'authentification reste à vérifier.
+La configuration est reconnue par Codex. Le 2 novembre 2026, un test MCP HTTP
+direct a validé l'authentification, découvert 107 outils et exécuté `list_servers`
+en lecture seule. Aucun déploiement ni redémarrage n'a été effectué.
 
 ## 8. Modifier le projet
 

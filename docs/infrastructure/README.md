@@ -19,11 +19,10 @@ avec un délai maximal de **cinq minutes pour le job**, ou par le **MCP
 Minestrator**. Les opérations sur le serveur et les déclenchements par un agent
 restent soumis à une autorisation explicite, conformément à `init.md`.
 
-Cette page décrit la configuration versionnée. La présence des secrets,
-l'état du serveur et le fonctionnement du MCP Minestrator n'ont pas été
-vérifiés lors de sa rédaction. Aucun outil MCP Minestrator n'est disponible
-dans la session de rédaction. Sa configuration locale est maintenant présente ;
-l'authentification et la connexion restent à valider avec la clé utilisateur.
+Cette page décrit la configuration versionnée. Les secrets GitHub et l'état
+du serveur de jeu n'ont pas été vérifiés. La connexion MCP avec la clé locale
+a été validée le 2 novembre 2026 : initialisation, découverte des outils et
+appel en lecture seule à `list_servers`. Aucun déploiement n'a été effectué.
 
 ## Intégration continue
 
@@ -107,8 +106,8 @@ Si le MCP ne fournit pas les opérations nécessaires, utiliser le workflow
 GitHub Actions autorisé ; ne pas improviser un déploiement SFTP local.
 
 La limite de cinq minutes est imposée par le workflow GitHub Actions ; elle
-n'est pas un timeout MCP configuré. La connexion du MCP et la validation d'un
-déploiement réel restent à réaliser dans une intervention autorisée.
+n'est pas un timeout MCP configuré. La connexion du MCP est validée ; la
+validation d'un déploiement réel reste à réaliser dans une intervention autorisée.
 
 ### Configuration locale du MCP
 
@@ -153,8 +152,12 @@ déploiement ni de redémarrage. Les règles d'autorisation du projet restent
 applicables aux actions sur le serveur.
 
 Vérification du 2 novembre 2026 : JSON valide, configuration Minestrator reconnue
-par `codex mcp list` avec authentification Bearer. Clé non fournie au moment de
-cette vérification ; connexion authentifiée non testée.
+par `codex mcp list` avec authentification Bearer. Test direct du protocole MCP
+HTTP avec la clé du `.env` : initialisation HTTP 200, serveur `minestrator`
+version `1.0.0`, découverte de 107 outils et appel `list_servers` réussi.
+Aucun secret ni contenu privé du compte n'a été affiché. Aucun outil d'écriture
+n'a été appelé. Le chargement des outils dans une nouvelle session Codex ou
+Claude reste distinct de ce test direct.
 
 Références : [connexion officielle Minestrator](https://minestrator.com/connect/your/ai),
 [configuration MCP Codex](https://developers.openai.com/codex/mcp),
