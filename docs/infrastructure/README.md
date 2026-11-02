@@ -92,6 +92,19 @@ déploiement resté bloqué sans message à l'étape SFTP jusqu'à la limite de 
 minutes ; `lftp` réessayait indéfiniment. Le secret `MINESTRATOR_SERVER_ID`
 était alors absent.
 
+Le même jour, après ajout des délais `lftp`, création de `MINESTRATOR_SERVER_ID`
+et réécriture des secrets SFTP avec les accès du serveur **DEV** lus via le MCP,
+le tag `v1.0.0` a été déployé : toutes les étapes du workflow réussissent,
+`mods/ModDevARPG.jar` est présent et la console du serveur montre
+`ModDevARPG 1.0.0 (moddevarpg)` chargé puis `Done`. Une erreur log4j sur
+`io.netty.channel.kqueue.Native` (« Only supported on OSX/BSD ») apparaît au
+démarrage ; elle vient du serveur, pas du mod, et n'empêche pas le démarrage.
+Aucune connexion de joueur n'a été testée.
+
+Le MCP Minestrator de Claude Code ne reçoit la clé que si `MINESTRATOR_API_KEY`
+est chargée avant le lancement du client (voir ci-dessous) ; sinon ses outils
+répondent « Clé API invalide ou révoquée ».
+
 ### Configuration GitHub
 
 Renseigner ces secrets dans les paramètres Actions du dépôt, sans publier leurs
