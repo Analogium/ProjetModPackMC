@@ -149,6 +149,7 @@ Avec Git Bash, Linux ou macOS : `./gradlew <tâche>`. Avec PowerShell : `.\gradl
 | `runServer` | Lance un serveur dédié sans interface |
 | `runData` | Lance la génération de données vers `src/generated/resources/` |
 | `runGameTestServer` | Lance tous les gametests sur un serveur de test puis s'arrête ; échoue si un test requis échoue |
+| `installClient` | Copie le jar en `ModDevARPG.jar` dans l'instance CurseForge `ModDevARPG` (ou `-PclientModsDir=...`), pour jouer sur le serveur de dev avec un vrai compte ; voir [README.md](README.md) |
 | `clean` | Supprime `build/` sans toucher au code |
 | `--refresh-dependencies` | Option à ajouter à une tâche si des bibliothèques manquent dans l'IDE |
 

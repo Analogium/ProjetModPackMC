@@ -105,6 +105,33 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
 
+// Copie le jar dans le dossier mods de l'instance CurseForge « ModDevARPG » (chemin par défaut),
+// ou dans le dossier donné par -PclientModsDir=... ou par clientModsDir dans ~/.gradle/gradle.properties.
+// Nom de fichier fixe : chaque version remplace la précédente, comme sur le serveur.
+// Tâche simple plutôt que Copy : Copy créerait le dossier cible avant toute vérification.
+tasks.register('installClient') {
+    group = 'distribution'
+    description = 'Installe le mod dans l\'instance CurseForge locale.'
+    def customDir = providers.gradleProperty('clientModsDir')
+    def modsDir = file(customDir.getOrElse(
+            "${System.getProperty('user.home')}/curseforge/minecraft/Instances/${mod_name}/mods"))
+    // Une instance CurseForge contient minecraftinstance.json ; un dossier personnalisé doit déjà exister.
+    def required = customDir.isPresent() ? modsDir : new File(modsDir.parentFile, 'minecraftinstance.json')
+    def target = new File(modsDir, "${mod_name}.jar")
+    def jarFile = tasks.named('jar').flatMap { it.archiveFile }
+    inputs.file(jarFile)
+    doLast {
+        if (!required.exists()) {
+            throw new GradleException("Introuvable : ${required}. Créer le profil CurseForge « ModDevARPG » " +
+                    "(voir README) ou passer -PclientModsDir=<dossier mods existant>.")
+        }
+        modsDir.mkdirs()
+        java.nio.file.Files.copy(jarFile.get().asFile.toPath(), target.toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        logger.lifecycle("Mod installé : ${target}")
+    }
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
