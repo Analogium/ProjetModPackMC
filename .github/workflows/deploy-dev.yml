@@ -1,13 +1,16 @@
 name: Deploy dev server
 
 on:
+  # Déploiement automatique au push d'un tag de version (ex. v1.2.0), ou lancement manuel.
   push:
-    branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
+# Un déploiement en cours n'est jamais annulé : une coupure pendant l'envoi
+# ou entre l'envoi et le redémarrage laisserait le serveur dans un état incertain.
 concurrency:
   group: deploy-dev
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   MOD_FILE: ModDevARPG.jar   # nom fixe sur le serveur (évite les doublons de version)
@@ -19,6 +22,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check tag matches mod_version
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "::error::Le tag $GITHUB_REF_NAME ne correspond pas à mod_version=$VERSION (attendu v$VERSION)."
+            exit 1
+          fi
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -26,8 +38,8 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build
-        run: chmod +x gradlew && ./gradlew build
+      - name: Build and gametests
+        run: ./gradlew build runGameTestServer
 
       - name: Find jar
         id: jar
@@ -36,6 +48,9 @@ jobs:
           echo "Jar: $JAR"
           echo "path=$JAR" >> "$GITHUB_OUTPUT"
 
+      # Envoi vers un fichier temporaire puis renommages : le jar actif n'est jamais
+      # partiellement écrit. La version précédente reste en .prev (non chargée par NeoForge)
+      # pour un retour manuel.
       - name: Upload SFTP
         env:
           LFTP_PASSWORD: ${{ secrets.SFTP_PASS }}
@@ -43,9 +58,13 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq lftp
           lftp -u "${{ secrets.SFTP_USER }}" --env-password \
             "sftp://${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_PORT }}" -e "
+            set cmd:fail-exit yes;
             set sftp:auto-confirm yes;
             cd mods;
-            put '${{ steps.jar.outputs.path }}' -o $MOD_FILE;
+            put '${{ steps.jar.outputs.path }}' -o $MOD_FILE.tmp;
+            rm $MOD_FILE.prev || echo 'Aucune version .prev a supprimer';
+            mv $MOD_FILE $MOD_FILE.prev || echo 'Premier deploiement : aucun jar precedent';
+            mv $MOD_FILE.tmp $MOD_FILE;
             bye"
 
       - name: Restart server
