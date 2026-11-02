@@ -24,7 +24,7 @@ Les versions et l'identité du mod sont définies dans [gradle.properties](gradl
 
 ## 2. État actuel
 
-Le projet sort du template NeoForge MDK et **ne contient encore aucun gameplay** : seulement les exemples du template (un bloc, un item, un onglet créatif, une config de démonstration). Le [README.md](README.md) est lui aussi celui du template ; il ne décrit pas ce projet.
+Le projet sort du template NeoForge MDK et **ne contient encore aucun gameplay** : seulement les exemples du template (un bloc, un item, un onglet créatif, une config de démonstration). Le [README.md](README.md) présente brièvement le projet et renvoie vers ce fichier.
 
 | Point vérifié | Résultat |
 |---|---|
@@ -156,6 +156,7 @@ Avec Git Bash, Linux ou macOS : `./gradlew <tâche>`. Avec PowerShell : `.\gradl
 - Sous VS Code, les lancements Client, Server, Data et GameTestServer se trouvent dans `.vscode/launch.json`, un fichier local à chaque machine.
 - `disableRecompilation = false` dans [build.gradle](build.gradle) rend les sources de Minecraft disponibles, mais demande de la mémoire. Sur une machine limitée (Codespace de 8 Go, par exemple), passer à `true` localement sans committer ce changement.
 - L'avertissement de fin de build sur Gradle 10 ne bloque rien aujourd'hui.
+- [.gitattributes](.gitattributes) impose LF dans le dépôt et CRLF pour les `.bat` ; `gradlew` est versionné exécutable. Inutile de modifier `core.autocrlf`.
 
 ## 7. Intégration et déploiement
 
