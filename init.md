@@ -50,18 +50,28 @@ Le projet sort du template NeoForge MDK et **ne contient encore aucun gameplay**
 - Changer le `mod_id`, la licence ou le mode de déploiement.
 - Ajouter une dépendance vers un autre mod.
 
-**Vision du gameplay : à compléter par le responsable du projet**
+**Vision du gameplay**
 
-Le nom évoque un ARPG, mais aucun objectif n'est écrit à ce jour. Tant que les lignes ci-dessous sont vides, ne pas inventer de fonctionnalité : s'en tenir à la demande reçue.
+Le but du projet est de concevoir un **ARPG avec des mécaniques de gestion et de
+hack and slash** dans Minecraft. Les [guidelines de conception](docs/guidelines/README.md)
+consignent cette orientation. Les systèmes précis restent à définir : ne pas
+inventer de fonctionnalité et s'en tenir à la demande reçue.
 
-- Objectif du mod :
-- Public visé :
-- Fonctionnalités prévues :
+- Objectif du mod : porter cette expérience ARPG, gestion et hack and slash.
+- Public visé : à définir.
+- Fonctionnalités prévues : à préciser pour chacun de ces axes.
 
 ## 4. Structure du dépôt
 
 ```text
 ├── init.md                     Ce fichier
+├── AGENTS.md                   Consignes communes à Codex et Claude
+├── CLAUDE.md                   Importe AGENTS.md
+├── docs/                       Documentation partagée, dont l'installation IA
+├── .claude/                    Configuration IA de référence, avec docs/ lié à ../docs/
+├── .codex/                     Lien vers .claude/ (recréé après un clone)
+├── .mcp.json                   Serveurs MCP CodeGraph et Minestrator pour Claude Code
+├── scripts/setup-ai.ps1         Recrée et vérifie les liens des dossiers IA
 ├── build.gradle                Configuration du build et des lancements
 ├── gradle.properties           Versions et identité du mod
 ├── .github/workflows/
@@ -79,6 +89,27 @@ Le nom évoque un ARPG, mais aucun objectif n'est écrit à ce jour. Tant que le
 **Ne pas modifier à la main ni committer** (générés, ignorés par Git) : `build/`, `bin/`, `.gradle/`, `run/`, `.vscode/`.
 
 Le dossier `src/generated/resources/` n'existe pas encore. Il recevra la sortie de `runData` : il faudra le committer, mais changer le générateur plutôt que ses fichiers.
+
+**Outils IA.** Les deux agents partagent `.claude/` et la documentation racine
+`docs/` via des liens de dossiers (jonctions sous Windows). CodeGraph fournit
+un index local du code, ignoré par Git dans `.codegraph/`. Après un clone,
+exécuter `.\scripts\setup-ai.ps1`, puis suivre [docs/README.md](docs/README.md)
+pour installer CodeGraph et charger le serveur MCP. Aucun réglage de déploiement
+ni aucune dépendance du mod ne sont modifiés par cette installation.
+
+Les [recommandations sur les structures](docs/recommandations/structure/README.md)
+décrivent les outils de construction, l'export NBT et la génération Jigsaw ;
+elles ne constituent pas une fonctionnalité déjà implémentée.
+
+Les plans de fonctionnalités sont conservés dans `docs/implementation-plans/`
+et référencés depuis l'[index documentaire](docs/README.md). Chaque plan suit
+son statut (`todo`, `active`, `done`) et sa branche d'implémentation ; un plan
+documenté ne signifie pas que la fonctionnalité existe déjà.
+
+Les permissions IA locales sont définies dans `.claude/rules/default.rules`
+(Codex via `.codex`) et `.claude/settings.json` (Claude). Voir le
+[guide des permissions](docs/permissions-ia.md) pour leur activation et leurs
+limites. Elles conservent les confirmations pour les opérations sensibles.
 
 ## 5. Fonctionnement du code
 
@@ -131,7 +162,7 @@ Avec Git Bash, Linux ou macOS : `./gradlew <tâche>`. Avec PowerShell : `.\gradl
 | Workflow | Déclencheur | Action |
 |---|---|---|
 | [build.yml](.github/workflows/build.yml) | Chaque push et pull request | `./gradlew build` avec Temurin 21 |
-| [deploy-dev.yml](.github/workflows/deploy-dev.yml) | Push sur `master`, ou lancement manuel | Build, envoi SFTP vers `mods/ModDevARPG.jar`, redémarrage par l'API Minestrator |
+| [deploy-dev.yml](.github/workflows/deploy-dev.yml) | Push sur `main`, ou lancement manuel | Build, envoi SFTP vers `mods/ModDevARPG.jar`, redémarrage par l'API Minestrator ; job limité à 5 minutes |
 
 - **Un workflow `Build` vert prouve seulement que le mod compile**, faute de tests automatisés.
 - Le déploiement redémarre un vrai serveur, ce qui coupe les joueurs connectés.
@@ -139,11 +170,31 @@ Avec Git Bash, Linux ou macOS : `./gradlew <tâche>`. Avec PowerShell : `.\gradl
 - Secrets GitHub attendus : `SFTP_HOST`, `SFTP_PORT`, `SFTP_USER`, `SFTP_PASS`, `MINESTRATOR_SERVER_ID`, `MINESTRATOR_API_KEY`. Leur présence n'a pas pu être vérifiée.
 - Le dépôt est public : aucun secret, mot de passe, adresse de serveur ni identifiant Minestrator dans les fichiers versionnés, y compris ici.
 
+Les déploiements passent par GitHub Actions ou par le MCP Minestrator, après
+autorisation explicite pour les actions d'un agent. La limite de cinq minutes
+couvre le job Actions complet, build compris ; elle ne garantit pas la
+disponibilité du serveur et ne restaure pas un transfert interrompu.
+Voir la [documentation d'infrastructure](docs/infrastructure/README.md) pour
+les prérequis, les vérifications et les limites de chaque voie. La configuration
+locale a été relue le 2 novembre 2026 ; l'état historique du § 2 n'a pas été
+revérifié sur GitHub ou Minestrator.
+
+Le MCP Minestrator est configuré pour Codex dans `.claude/config.toml` et pour
+Claude Code dans `.mcp.json`. La clé vient de `MINESTRATOR_API_KEY`, chargée
+depuis un `.env` local ignoré par Git avant de lancer le client ; suivre la
+[procédure MCP](docs/infrastructure/README.md#configuration-locale-du-mcp).
+La configuration est reconnue par Codex. Le 2 novembre 2026, un test MCP HTTP
+direct a validé l'authentification, découvert 107 outils et exécuté `list_servers`
+en lecture seule. Aucun déploiement ni redémarrage n'a été effectué.
+
 ## 8. Modifier le projet
 
 Cette procédure s'applique à toute modification.
 
-1. **Comprendre** : lire ce fichier et le code concerné.
+1. **Comprendre** : lire ce fichier, l'[index documentaire](docs/README.md), les
+   [guidelines](docs/guidelines/README.md), les recommandations pertinentes
+   liées par l'index et le code concerné. Appliquer les règles de prise de
+   contexte d'[AGENTS.md](AGENTS.md).
 2. **Situer** : vérifier que la demande entre dans le [cadrage](#3-cadrage). Sinon, obtenir l'accord du responsable du projet avant de commencer.
 3. **Changer** : faire le plus petit changement utile, dans le style du code voisin. Identifiants en anglais, documentation du projet en français.
 4. **Répercuter** : appliquer le tableau d'impact ci-dessous.
@@ -187,7 +238,7 @@ Cette procédure s'applique à toute modification.
 
 ## 10. Problèmes connus
 
-1. **Le déploiement automatique ne se déclenche jamais.** [deploy-dev.yml](.github/workflows/deploy-dev.yml) écoute `master`, alors que la seule branche est `main`. Passer à `main` ferait redémarrer le serveur à chaque push : le choix revient au responsable du projet.
+1. **Le déploiement cible déjà `main`** dans [deploy-dev.yml](.github/workflows/deploy-dev.yml) : chaque push peut redémarrer le serveur. Le job est désormais limité à cinq minutes, mais son exécution réelle avec cette limite reste à vérifier. Aucun rollback ni contrôle de disponibilité automatique n'est implémenté.
 2. **Le mod porte encore des valeurs du template** : package et groupe `com.example.moddevarpg`, description « Example mod description », onglet « Example Mod Tab », bloc, item et options de démonstration. À remplacer lors de l'ajout du vrai contenu.
 3. **Le bloc et l'item d'exemple n'ont ni modèle ni texture**, et le bloc n'a pas de loot table : un affichage de texture manquante est attendu.
 4. **Le fonctionnement sur serveur dédié n'est pas vérifié** (voir [§ 2](#2-état-actuel)).

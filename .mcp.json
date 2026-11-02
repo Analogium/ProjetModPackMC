@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "codegraph": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/d", "/c", "codegraph", "serve", "--mcp"]
+    },
+    "minestrator": {
+      "type": "http",
+      "url": "https://mcp.sttr.io/minestrator",
+      "headers": {
+        "Authorization": "Bearer ${MINESTRATOR_API_KEY}"
+      }
+    }
+  }
+}
