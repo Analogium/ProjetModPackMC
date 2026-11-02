@@ -101,6 +101,11 @@ Les [recommandations sur les structures](docs/recommandations/structure/README.m
 décrivent les outils de construction, l'export NBT et la génération Jigsaw ;
 elles ne constituent pas une fonctionnalité déjà implémentée.
 
+Les plans de fonctionnalités sont conservés dans `docs/implementation-plans/`
+et référencés depuis l'[index documentaire](docs/README.md). Chaque plan suit
+son statut (`todo`, `active`, `done`) et sa branche d'implémentation ; un plan
+documenté ne signifie pas que la fonctionnalité existe déjà.
+
 ## 5. Fonctionnement du code
 
 **Démarrage.** NeoForge instancie les classes annotées `@Mod`.

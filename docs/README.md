@@ -27,6 +27,21 @@ via un sous-index ; maintenir les liens lors des déplacements et suppressions.
 - [Création et génération de structures](recommandations/structure/README.md) :
   outils, processus de construction et bonnes pratiques pour Minecraft 1.21.11.
 
+## Plans d'implémentation
+
+- [Placement des structures inspiré de MineColonies](implementation-plans/placement-structures.md) :
+  périmètre proposé, étapes, critères de validation et suivi du statut
+  (`todo`, `active`, `done`) avec la branche d'implémentation.
+
+- [Donjons procéduraux](implementation-plans/donjons-proceduraux.md) : assemblage,
+  intégration au monde et validation des parcours.
+- [Évolution de base de l'Overworld](implementation-plans/evolution-overworld.md) :
+  paliers, transitions et état persistant.
+- [Système monétaire](implementation-plans/systeme-monetaire.md) : comptes,
+  opérations et cohérence des paiements.
+- [Flotte maritime et convois](implementation-plans/flotte-convois.md) : navires,
+  trajets et conservation des cargaisons.
+
 ## Infrastructure
 
 - [Hébergement, CI et déploiement](infrastructure/README.md) : Git/GitHub,
