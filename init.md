@@ -106,6 +106,11 @@ et référencés depuis l'[index documentaire](docs/README.md). Chaque plan suit
 son statut (`todo`, `active`, `done`) et sa branche d'implémentation ; un plan
 documenté ne signifie pas que la fonctionnalité existe déjà.
 
+Les permissions IA locales sont définies dans `.claude/rules/default.rules`
+(Codex via `.codex`) et `.claude/settings.json` (Claude). Voir le
+[guide des permissions](docs/permissions-ia.md) pour leur activation et leurs
+limites. Elles conservent les confirmations pour les opérations sensibles.
+
 ## 5. Fonctionnement du code
 
 **Démarrage.** NeoForge instancie les classes annotées `@Mod`.

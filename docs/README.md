@@ -52,6 +52,9 @@ via un sous-index ; maintenir les liens lors des déplacements et suppressions.
 
 ## Dossiers partagés
 
+- [Permissions locales de Codex et Claude](permissions-ia.md) : listes
+  d'autorisation des commandes courantes, confirmations et activation.
+
 ```text
 .claude/                  Dossier de référence pour les deux agents
   config.toml             Configuration MCP de Codex
