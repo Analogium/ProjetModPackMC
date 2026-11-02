@@ -50,13 +50,16 @@ Le projet sort du template NeoForge MDK et **ne contient encore aucun gameplay**
 - Changer le `mod_id`, la licence ou le mode de déploiement.
 - Ajouter une dépendance vers un autre mod.
 
-**Vision du gameplay : à compléter par le responsable du projet**
+**Vision du gameplay**
 
-Le nom évoque un ARPG, mais aucun objectif n'est écrit à ce jour. Tant que les lignes ci-dessous sont vides, ne pas inventer de fonctionnalité : s'en tenir à la demande reçue.
+Le but du projet est de concevoir un **ARPG avec des mécaniques de gestion et de
+hack and slash** dans Minecraft. Les [guidelines de conception](docs/guidelines/README.md)
+consignent cette orientation. Les systèmes précis restent à définir : ne pas
+inventer de fonctionnalité et s'en tenir à la demande reçue.
 
-- Objectif du mod :
-- Public visé :
-- Fonctionnalités prévues :
+- Objectif du mod : porter cette expérience ARPG, gestion et hack and slash.
+- Public visé : à définir.
+- Fonctionnalités prévues : à préciser pour chacun de ces axes.
 
 ## 4. Structure du dépôt
 
@@ -93,6 +96,10 @@ un index local du code, ignoré par Git dans `.codegraph/`. Après un clone,
 exécuter `.\scripts\setup-ai.ps1`, puis suivre [docs/README.md](docs/README.md)
 pour installer CodeGraph et charger le serveur MCP. Aucun réglage de déploiement
 ni aucune dépendance du mod ne sont modifiés par cette installation.
+
+Les [recommandations sur les structures](docs/recommandations/structure/README.md)
+décrivent les outils de construction, l'export NBT et la génération Jigsaw ;
+elles ne constituent pas une fonctionnalité déjà implémentée.
 
 ## 5. Fonctionnement du code
 
@@ -157,7 +164,10 @@ Avec Git Bash, Linux ou macOS : `./gradlew <tâche>`. Avec PowerShell : `.\gradl
 
 Cette procédure s'applique à toute modification.
 
-1. **Comprendre** : lire ce fichier et le code concerné.
+1. **Comprendre** : lire ce fichier, l'[index documentaire](docs/README.md), les
+   [guidelines](docs/guidelines/README.md), les recommandations pertinentes
+   liées par l'index et le code concerné. Appliquer les règles de prise de
+   contexte d'[AGENTS.md](AGENTS.md).
 2. **Situer** : vérifier que la demande entre dans le [cadrage](#3-cadrage). Sinon, obtenir l'accord du responsable du projet avant de commencer.
 3. **Changer** : faire le plus petit changement utile, dans le style du code voisin. Identifiants en anglais, documentation du projet en français.
 4. **Répercuter** : appliquer le tableau d'impact ci-dessous.

@@ -1,9 +1,31 @@
-# Documentation partagée et outils IA
+# Index documentaire et outils IA
 
 Le point d'entrée du projet reste [init.md](../init.md) : architecture, versions,
 commandes Gradle, validation et règles de contribution.
 Les consignes communes sont dans [AGENTS.md](../AGENTS.md) ; Claude les importe
 depuis [CLAUDE.md](../CLAUDE.md).
+
+## Utilisation de l'index par les agents
+
+Cet index est le point d'accès à la documentation du projet. Au début d'une
+tâche, consulter `init.md`, les guidelines ci-dessous, puis les recommandations
+pertinentes. Suivre les liens et lire les documents concernés avant de prendre
+des décisions ou de modifier le projet, selon les règles d'`AGENTS.md`.
+
+CodeGraph complète cette lecture pour l'exploration du code ; il ne remplace
+pas l'index documentaire. Lire directement les fichiers Markdown référencés.
+Tout nouveau document doit être accessible depuis cet index, directement ou
+via un sous-index ; maintenir les liens lors des déplacements et suppressions.
+
+## Guidelines
+
+- [Vision du projet](guidelines/README.md) : un ARPG avec des mécaniques de
+  gestion et de hack and slash.
+
+## Recommandations
+
+- [Création et génération de structures](recommandations/structure/README.md) :
+  outils, processus de construction et bonnes pratiques pour Minecraft 1.21.11.
 
 ## Dossiers partagés
 
