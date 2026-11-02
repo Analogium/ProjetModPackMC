@@ -38,3 +38,9 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### AI tooling ###
+/.codex/
+/.claude/docs/
+/.claude/settings.local.json
+/.codegraph/

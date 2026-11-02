@@ -62,6 +62,13 @@ Le nom évoque un ARPG, mais aucun objectif n'est écrit à ce jour. Tant que le
 
 ```text
 ├── init.md                     Ce fichier
+├── AGENTS.md                   Consignes communes à Codex et Claude
+├── CLAUDE.md                   Importe AGENTS.md
+├── docs/                       Documentation partagée, dont l'installation IA
+├── .claude/                    Configuration IA de référence, avec docs/ lié à ../docs/
+├── .codex/                     Lien vers .claude/ (recréé après un clone)
+├── .mcp.json                   Serveur MCP CodeGraph pour Claude Code
+├── scripts/setup-ai.ps1         Recrée et vérifie les liens des dossiers IA
 ├── build.gradle                Configuration du build et des lancements
 ├── gradle.properties           Versions et identité du mod
 ├── .github/workflows/
@@ -79,6 +86,13 @@ Le nom évoque un ARPG, mais aucun objectif n'est écrit à ce jour. Tant que le
 **Ne pas modifier à la main ni committer** (générés, ignorés par Git) : `build/`, `bin/`, `.gradle/`, `run/`, `.vscode/`.
 
 Le dossier `src/generated/resources/` n'existe pas encore. Il recevra la sortie de `runData` : il faudra le committer, mais changer le générateur plutôt que ses fichiers.
+
+**Outils IA.** Les deux agents partagent `.claude/` et la documentation racine
+`docs/` via des liens de dossiers (jonctions sous Windows). CodeGraph fournit
+un index local du code, ignoré par Git dans `.codegraph/`. Après un clone,
+exécuter `.\scripts\setup-ai.ps1`, puis suivre [docs/README.md](docs/README.md)
+pour installer CodeGraph et charger le serveur MCP. Aucun réglage de déploiement
+ni aucune dépendance du mod ne sont modifiés par cette installation.
 
 ## 5. Fonctionnement du code
 

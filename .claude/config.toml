@@ -1,0 +1,4 @@
+[mcp_servers.codegraph]
+command = "cmd"
+args = ["/d", "/c", "codegraph", "serve", "--mcp"]
+startup_timeout_sec = 60
