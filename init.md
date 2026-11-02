@@ -33,7 +33,7 @@ Le projet **ne contient encore aucun gameplay** : une classe de mod vide et un g
 | Client de développement | `runClient` sous Windows le 2026-11-02, avec les exemples du template : mod chargé, monde solo créé, rejoint, sauvegardé et quitté sans erreur. Non relancé depuis leur retrait |
 | `gradlew.bat build` sous Windows | OK le 2026-11-02, après retrait des exemples |
 | Serveur dédié | `runServer` sous Windows le 2026-11-02, avec les exemples : mod chargé, monde prêt, aucune erreur liée au mod ; aucune connexion de joueur testée. Après leur retrait, chargement sur serveur couvert par le gametest |
-| Déploiement | Jamais réussi : une tentative le 2026-11-02 (ancien workflow) est restée bloquée à l'envoi SFTP jusqu'au timeout (voir [infrastructure](docs/infrastructure/README.md)) |
+| Déploiement | Tag `v1.0.0` le 2026-11-02 : workflow réussi, `mods/ModDevARPG.jar` présent sur le serveur DEV, mod chargé et serveur démarré d'après la console. Aucune connexion de joueur testée (voir [infrastructure](docs/infrastructure/README.md)) |
 | Tests automatisés | Gametest `moddevarpg:mod_loads` (chargement du mod sur serveur de test) : `runGameTestServer` OK sous Windows le 2026-11-02 ; un échec volontaire donne bien `BUILD FAILED`. Pas encore exécuté dans GitHub Actions |
 
 ## 3. Cadrage
@@ -240,7 +240,7 @@ Cette procédure s'applique à toute modification.
 
 ## 10. Problèmes connus
 
-1. **Le déploiement n'a jamais été exécuté** dans [deploy-dev.yml](.github/workflows/deploy-dev.yml) : déclenchement par tag, envoi via `.tmp` et limite de cinq minutes restent à vérifier sur GitHub et Minestrator. Aucun contrôle de disponibilité automatique ; le retour à `.prev` est manuel.
+1. **Le déploiement n'a réussi qu'une fois** ([deploy-dev.yml](.github/workflows/deploy-dev.yml), premier envoi) : la rotation vers `.prev` sur Minestrator n'est vérifiée qu'en local. Aucun contrôle de disponibilité automatique ; le retour à `.prev` est manuel.
 2. **Le serveur dédié n'est vérifié qu'au démarrage** (voir [§ 2](#2-état-actuel)) : aucune connexion de joueur ni lancement sur Minestrator.
 3. **Le seul test automatisé vérifie le chargement du mod** : aucun comportement de gameplay n'est testé, faute de gameplay.
 4. **Codex n'a pas été revérifié** depuis le passage de `.codex/` en dossier versionné.
