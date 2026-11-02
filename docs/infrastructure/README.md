@@ -22,7 +22,8 @@ restent soumis à une autorisation explicite, conformément à `init.md`.
 Cette page décrit la configuration versionnée. La présence des secrets,
 l'état du serveur et le fonctionnement du MCP Minestrator n'ont pas été
 vérifiés lors de sa rédaction. Aucun outil MCP Minestrator n'est disponible
-dans la session de rédaction ; cette voie est prévue, mais non validée.
+dans la session de rédaction. Sa configuration locale est maintenant présente ;
+l'authentification et la connexion restent à valider avec la clé utilisateur.
 
 ## Intégration continue
 
@@ -108,3 +109,53 @@ GitHub Actions autorisé ; ne pas improviser un déploiement SFTP local.
 La limite de cinq minutes est imposée par le workflow GitHub Actions ; elle
 n'est pas un timeout MCP configuré. La connexion du MCP et la validation d'un
 déploiement réel restent à réaliser dans une intervention autorisée.
+
+### Configuration locale du MCP
+
+Le serveur officiel utilise `https://mcp.sttr.io/minestrator` en HTTP.
+[.claude/config.toml](../../.claude/config.toml), également accessible par
+`.codex/config.toml`, configure Codex avec `bearer_token_env_var`.
+[.mcp.json](../../.mcp.json) configure Claude Code avec la même variable
+`MINESTRATOR_API_KEY`. Aucun secret n'est enregistré dans ces fichiers.
+
+Créer une clé dédiée dans l'espace client Minestrator. Copier
+[.env.example](../../.env.example) vers `.env` à la racine si ce fichier
+n'existe pas encore, puis remplir `MINESTRATOR_API_KEY=` dans un éditeur local.
+Le fichier `.env` est ignoré par Git. Utiliser une valeur brute sans guillemets,
+sans préfixe `Bearer` et sans syntaxe `export`.
+
+Les clients MCP ne chargent pas automatiquement `.env`. Depuis la racine du
+projet, dans le terminal PowerShell qui lancera le client :
+
+```powershell
+$minestratorSettings = Get-Content -Raw -Encoding UTF8 .env | ConvertFrom-StringData
+if ([string]::IsNullOrWhiteSpace($minestratorSettings.MINESTRATOR_API_KEY)) {
+    throw 'Renseigner MINESTRATOR_API_KEY dans .env avant de continuer.'
+}
+$env:MINESTRATOR_API_KEY = $minestratorSettings.MINESTRATOR_API_KEY
+Remove-Variable minestratorSettings
+codex mcp list
+codex
+# Ou, dans ce même terminal : claude
+```
+
+Ces commandes attendent uniquement le format simple `CLE=valeur` du modèle,
+avec des commentaires `#` éventuels ; elles n'exécutent pas le contenu du fichier.
+Si `codex` n'est pas dans le PATH, appeler l'exécutable installé par son chemin
+complet. La variable est propre à ce terminal et aux processus lancés ensuite.
+Une application déjà ouverte ne la reçoit pas : utiliser le client lancé depuis
+ce terminal, puis vérifier `/mcp` dans sa nouvelle session. La configuration
+Claude du projet peut demander une approbation au premier lancement.
+
+`codex mcp list` confirme seulement la configuration, pas l'authentification.
+Valider ensuite la connexion et la découverte des outils, sans déclencher de
+déploiement ni de redémarrage. Les règles d'autorisation du projet restent
+applicables aux actions sur le serveur.
+
+Vérification du 2 novembre 2026 : JSON valide, configuration Minestrator reconnue
+par `codex mcp list` avec authentification Bearer. Clé non fournie au moment de
+cette vérification ; connexion authentifiée non testée.
+
+Références : [connexion officielle Minestrator](https://minestrator.com/connect/your/ai),
+[configuration MCP Codex](https://developers.openai.com/codex/mcp),
+[variables dans Claude Code](https://code.claude.com/docs/en/mcp#environment-variable-expansion-in-mcpjson).

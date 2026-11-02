@@ -2,3 +2,7 @@
 command = "cmd"
 args = ["/d", "/c", "codegraph", "serve", "--mcp"]
 startup_timeout_sec = 60
+
+[mcp_servers.minestrator]
+url = "https://mcp.sttr.io/minestrator"
+bearer_token_env_var = "MINESTRATOR_API_KEY"

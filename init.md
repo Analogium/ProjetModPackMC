@@ -70,7 +70,7 @@ inventer de fonctionnalité et s'en tenir à la demande reçue.
 ├── docs/                       Documentation partagée, dont l'installation IA
 ├── .claude/                    Configuration IA de référence, avec docs/ lié à ../docs/
 ├── .codex/                     Lien vers .claude/ (recréé après un clone)
-├── .mcp.json                   Serveur MCP CodeGraph pour Claude Code
+├── .mcp.json                   Serveurs MCP CodeGraph et Minestrator pour Claude Code
 ├── scripts/setup-ai.ps1         Recrée et vérifie les liens des dossiers IA
 ├── build.gradle                Configuration du build et des lancements
 ├── gradle.properties           Versions et identité du mod
@@ -173,6 +173,12 @@ Voir la [documentation d'infrastructure](docs/infrastructure/README.md) pour
 les prérequis, les vérifications et les limites de chaque voie. La configuration
 locale a été relue le 2 novembre 2026 ; l'état historique du § 2 n'a pas été
 revérifié sur GitHub ou Minestrator.
+
+Le MCP Minestrator est configuré pour Codex dans `.claude/config.toml` et pour
+Claude Code dans `.mcp.json`. La clé vient de `MINESTRATOR_API_KEY`, chargée
+depuis un `.env` local ignoré par Git avant de lancer le client ; suivre la
+[procédure MCP](docs/infrastructure/README.md#configuration-locale-du-mcp).
+La configuration est reconnue par Codex ; l'authentification reste à vérifier.
 
 ## 8. Modifier le projet
 

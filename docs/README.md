@@ -47,6 +47,8 @@ via un sous-index ; maintenir les liens lors des déplacements et suppressions.
 - [Hébergement, CI et déploiement](infrastructure/README.md) : Git/GitHub,
   serveur Minestrator, déploiement GitHub Actions limité à cinq minutes et
   voie alternative par le MCP Minestrator.
+- [Configuration locale du MCP Minestrator](infrastructure/README.md#configuration-locale-du-mcp) :
+  clé dans `.env` ignoré par Git, chargement PowerShell et vérification.
 
 ## Dossiers partagés
 
