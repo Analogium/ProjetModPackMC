@@ -27,6 +27,12 @@ via un sous-index ; maintenir les liens lors des déplacements et suppressions.
 - [Création et génération de structures](recommandations/structure/README.md) :
   outils, processus de construction et bonnes pratiques pour Minecraft 1.21.11.
 
+## Infrastructure
+
+- [Hébergement, CI et déploiement](infrastructure/README.md) : Git/GitHub,
+  serveur Minestrator, déploiement GitHub Actions limité à cinq minutes et
+  voie alternative par le MCP Minestrator.
+
 ## Dossiers partagés
 
 ```text

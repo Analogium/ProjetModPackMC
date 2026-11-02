@@ -152,13 +152,22 @@ Avec Git Bash, Linux ou macOS : `./gradlew <tâche>`. Avec PowerShell : `.\gradl
 | Workflow | Déclencheur | Action |
 |---|---|---|
 | [build.yml](.github/workflows/build.yml) | Chaque push et pull request | `./gradlew build` avec Temurin 21 |
-| [deploy-dev.yml](.github/workflows/deploy-dev.yml) | Push sur `master`, ou lancement manuel | Build, envoi SFTP vers `mods/ModDevARPG.jar`, redémarrage par l'API Minestrator |
+| [deploy-dev.yml](.github/workflows/deploy-dev.yml) | Push sur `main`, ou lancement manuel | Build, envoi SFTP vers `mods/ModDevARPG.jar`, redémarrage par l'API Minestrator ; job limité à 5 minutes |
 
 - **Un workflow `Build` vert prouve seulement que le mod compile**, faute de tests automatisés.
 - Le déploiement redémarre un vrai serveur, ce qui coupe les joueurs connectés.
 - Le jar garde un nom fixe sur le serveur pour éviter d'y accumuler les versions.
 - Secrets GitHub attendus : `SFTP_HOST`, `SFTP_PORT`, `SFTP_USER`, `SFTP_PASS`, `MINESTRATOR_SERVER_ID`, `MINESTRATOR_API_KEY`. Leur présence n'a pas pu être vérifiée.
 - Le dépôt est public : aucun secret, mot de passe, adresse de serveur ni identifiant Minestrator dans les fichiers versionnés, y compris ici.
+
+Les déploiements passent par GitHub Actions ou par le MCP Minestrator, après
+autorisation explicite pour les actions d'un agent. La limite de cinq minutes
+couvre le job Actions complet, build compris ; elle ne garantit pas la
+disponibilité du serveur et ne restaure pas un transfert interrompu.
+Voir la [documentation d'infrastructure](docs/infrastructure/README.md) pour
+les prérequis, les vérifications et les limites de chaque voie. La configuration
+locale a été relue le 2 novembre 2026 ; l'état historique du § 2 n'a pas été
+revérifié sur GitHub ou Minestrator.
 
 ## 8. Modifier le projet
 
@@ -211,7 +220,7 @@ Cette procédure s'applique à toute modification.
 
 ## 10. Problèmes connus
 
-1. **Le déploiement automatique ne se déclenche jamais.** [deploy-dev.yml](.github/workflows/deploy-dev.yml) écoute `master`, alors que la seule branche est `main`. Passer à `main` ferait redémarrer le serveur à chaque push : le choix revient au responsable du projet.
+1. **Le déploiement cible déjà `main`** dans [deploy-dev.yml](.github/workflows/deploy-dev.yml) : chaque push peut redémarrer le serveur. Le job est désormais limité à cinq minutes, mais son exécution réelle avec cette limite reste à vérifier. Aucun rollback ni contrôle de disponibilité automatique n'est implémenté.
 2. **Le mod porte encore des valeurs du template** : package et groupe `com.example.moddevarpg`, description « Example mod description », onglet « Example Mod Tab », bloc, item et options de démonstration. À remplacer lors de l'ajout du vrai contenu.
 3. **Le bloc et l'item d'exemple n'ont ni modèle ni texture**, et le bloc n'a pas de loot table : un affichage de texture manquante est attendu.
 4. **Le fonctionnement sur serveur dédié n'est pas vérifié** (voir [§ 2](#2-état-actuel)).
