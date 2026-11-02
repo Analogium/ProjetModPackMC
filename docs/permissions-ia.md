@@ -1,21 +1,21 @@
 # Permissions locales de Codex et Claude
 
 Les opérations courantes du projet disposent de listes d'autorisation
-versionnées. Les deux outils demandent des formats distincts, conservés dans
-le dossier de référence `.claude/` :
+versionnées. Les deux outils demandent des formats distincts, chacun dans son
+dossier :
 
 | Outil | Fichier |
 |---|---|
-| Codex | [.claude/rules/default.rules](../.claude/rules/default.rules), accessible via `.codex/rules/default.rules` |
+| Codex | [.codex/rules/default.rules](../.codex/rules/default.rules) |
 | Claude Code | [.claude/settings.json](../.claude/settings.json) |
 
 ## Périmètre
 
 Les listes couvrent la consultation Git, l'ajout à l'index, fetch, le changement
-ordinaire de branche, les requêtes CodeGraph, les tâches Gradle courantes et
-les commandes PowerShell de lecture. Claude accepte aussi les éditions locales.
-Le code exécuté par Gradle doit rester de confiance : autoriser une tâche
-autorise ses scripts et leurs effets, pas seulement son nom.
+ordinaire de branche, les requêtes CodeGraph, toutes les tâches du wrapper
+Gradle (`./gradlew`, `.\gradlew`, `gradlew.bat`) et les commandes PowerShell
+de lecture. Le code exécuté par Gradle doit rester de confiance : autoriser
+le wrapper autorise les scripts du build et leurs effets.
 
 Les suppressions, réécritures Git, commits, pushes, lancements de workflows et
 opérations système sensibles demandent confirmation. Les outils du serveur MCP
@@ -32,16 +32,19 @@ contournement ou accès total au système n'est autorisé globalement.
 ## Activation et limites
 
 Redémarrer les clients dans ce dépôt approuvé. Codex charge les fichiers
-`.rules` depuis les couches de configuration actives ; la jonction `.codex`
-doit exister. Son réglage local conserve `workspace-write` et `on-request`.
+`.rules` depuis les couches de configuration actives, dont `.codex/rules/` du
+projet approuvé. Son réglage local conserve `workspace-write` et `on-request`.
 Les règles concernent les préfixes des commandes ; une invocation PowerShell
 complexe ou un chemin d'exécutable différent peut encore demander confirmation.
 Les restrictions gérées par l'application ou l'administrateur restent prioritaires.
 
 Claude charge les permissions du projet après approbation de celui-ci.
 Les règles Bash et PowerShell sont séparées. Les règles `ask` sont prioritaires
-sur `allow` ; le mode choisi est `acceptEdits`. Vérifier les permissions finales
-avec `/permissions`, car les réglages utilisateur ou locaux peuvent les compléter.
+sur `allow`. Aucun mode par défaut n'est imposé par le projet : chacun choisit
+le sien dans `.claude/settings.local.json`, ignoré par Git, par exemple
+`{"permissions": {"defaultMode": "acceptEdits"}}`. Vérifier les permissions
+finales avec `/permissions`, car les réglages utilisateur ou locaux peuvent
+les compléter.
 
 ## Vérification
 
@@ -49,10 +52,10 @@ Le JSON et les exemples de commandes doivent être vérifiés après modificatio
 Pour Codex, utiliser son vérificateur sans exécuter les commandes ciblées :
 
 ```powershell
-codex execpolicy check --rules .claude/rules/default.rules -- git status --short
-codex execpolicy check --rules .claude/rules/default.rules -- git add -- docs/README.md
-codex execpolicy check --rules .claude/rules/default.rules -- git reset --hard
-codex execpolicy check --rules .claude/rules/default.rules -- git push origin main
+codex execpolicy check --rules .codex/rules/default.rules -- git status --short
+codex execpolicy check --rules .codex/rules/default.rules -- git add -- docs/README.md
+codex execpolicy check --rules .codex/rules/default.rules -- git reset --hard
+codex execpolicy check --rules .codex/rules/default.rules -- git push origin main
 ```
 
 Résultats attendus : `allow`, `allow`, `prompt`, `prompt`.

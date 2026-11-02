@@ -1,25 +1,28 @@
+# ModDevARPG
 
-Installation information
-=======
+Mod NeoForge pour Minecraft 1.21.11 (Java 21) : un ARPG mêlant gestion et
+hack and slash. Le projet est en début de développement.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## Démarrer
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+Prérequis : JDK 21 (Gradle peut aussi le télécharger automatiquement).
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+```sh
+./gradlew build      # produit build/libs/moddevarpg-<version>.jar
+./gradlew runClient  # lance le jeu avec le mod
+```
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+Sous PowerShell : `.\gradlew <tâche>`.
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## Documentation
+
+- [init.md](init.md) : architecture, commandes, validation et règles de contribution.
+  À lire avant toute modification.
+- [docs/README.md](docs/README.md) : index de la documentation, outils IA et infrastructure.
+
+## Licence
+
+Le mod est sous licence « All Rights Reserved ». Les fichiers issus du template
+NeoForge sont sous licence MIT ([TEMPLATE_LICENSE.txt](TEMPLATE_LICENSE.txt)).
+Les noms de mappings Mojang sont soumis à leur
+[propre licence](https://github.com/NeoForged/NeoForm/blob/main/Mojang.md).
