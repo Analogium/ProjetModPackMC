@@ -50,7 +50,8 @@ jobs:
 
       # Envoi vers un fichier temporaire puis renommages : le jar actif n'est jamais
       # partiellement écrit. La version précédente reste en .prev (non chargée par NeoForge)
-      # pour un retour manuel.
+      # pour un retour manuel. Délais courts (net:*) : une connexion ou une authentification
+      # en échec arrête l'étape en environ une minute au lieu de bloquer jusqu'au timeout du job.
       - name: Upload SFTP
         env:
           LFTP_PASSWORD: ${{ secrets.SFTP_PASS }}
@@ -60,6 +61,9 @@ jobs:
             "sftp://${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_PORT }}" -e "
             set cmd:fail-exit yes;
             set sftp:auto-confirm yes;
+            set net:timeout 20;
+            set net:max-retries 2;
+            set net:reconnect-interval-base 5;
             cd mods;
             put '${{ steps.jar.outputs.path }}' -o $MOD_FILE.tmp;
             rm $MOD_FILE.prev || echo 'Aucune version .prev a supprimer';
@@ -69,7 +73,7 @@ jobs:
 
       - name: Restart server
         run: |
-          curl -fsS -X PUT "https://mine.sttr.io/server/${{ secrets.MINESTRATOR_SERVER_ID }}/poweraction" \
+          curl -fsS --max-time 30 -X PUT "https://mine.sttr.io/server/${{ secrets.MINESTRATOR_SERVER_ID }}/poweraction" \
             -H "Authorization: Bearer ${{ secrets.MINESTRATOR_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{"poweraction":"restart"}'

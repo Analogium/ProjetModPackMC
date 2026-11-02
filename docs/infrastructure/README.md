@@ -83,7 +83,14 @@ le redémarrage : aucun point d'accès d'état de l'API Minestrator n'a été v�
 Séquence SFTP vérifiée le 2 novembre 2026 contre un serveur OpenSSH local
 (lftp 4.8.4, authentification par clé) : premier envoi, rotation `.prev` sur
 deux envois suivants, et échec d'envoi sans modification du jar actif (code de
-sortie 1). Le serveur SFTP de Minestrator n'a pas été testé.
+sortie 1). Serveur injoignable : échec en quelques secondes avec la cause
+affichée, grâce aux réglages `net:timeout`, `net:max-retries` et
+`net:reconnect-interval-base`. Le serveur SFTP de Minestrator n'a pas été testé.
+
+Historique : le 2 novembre 2026, l'ancien workflow (push sur `main`) a lancé un
+déploiement resté bloqué sans message à l'étape SFTP jusqu'à la limite de cinq
+minutes ; `lftp` réessayait indéfiniment. Le secret `MINESTRATOR_SERVER_ID`
+était alors absent.
 
 ### Configuration GitHub
 
