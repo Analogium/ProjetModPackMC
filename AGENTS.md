@@ -3,13 +3,15 @@
 Lire [init.md](init.md) avant toute modification et respecter ses règles, son
 cadrage et ses niveaux de validation. La documentation du projet est en français.
 
-## Prise de contexte documentaire obligatoire
+## Prise de contexte documentaire
 
 Au début de chaque tâche dans ce projet :
 
-1. Lire [init.md](init.md) et l'[index documentaire](docs/README.md).
-2. Consulter les [guidelines](docs/guidelines/README.md), puis suivre les liens
-   de l'index vers les recommandations pertinentes pour la tâche.
+1. Lire [init.md](init.md).
+2. Parcourir l'[index documentaire](docs/README.md) et lire seulement les
+   documents utiles à la tâche : les [guidelines](docs/guidelines/README.md)
+   pour un choix de gameplay, le plan de la fonctionnalité concernée,
+   l'infrastructure pour la CI ou le déploiement, etc.
 3. Tenir compte de ces documents dans les décisions et les modifications.
    Distinguer la vision, les recommandations et les fonctionnalités réellement
    implémentées ; ne pas transformer une recommandation en décision implicite.
@@ -27,10 +29,9 @@ celui-ci.
 
 ## Outils et fichiers partagés
 
-- Les dossiers `.claude` et `.codex` partagent les mêmes fichiers ; modifier
-  `.claude`, le dossier de référence. Ne pas créer de liens réciproques.
-- La documentation partagée est dans [docs/](docs/), également accessible par
-  `.claude/docs/` et `.codex/docs/`. Modifier les originaux dans `docs/`.
+- Chaque outil a son dossier versionné : `.claude/` pour Claude Code
+  (permissions), `.codex/` pour Codex (configuration et règles). Les consignes
+  communes restent dans ce fichier et la documentation dans [docs/](docs/).
 - Utiliser CodeGraph en priorité dès qu'il est disponible : `codegraph_explore`
   via MCP, ou la CLI (`query`, `node`, `impact`) si le serveur MCP est indisponible.
   Ne jamais utiliser `grep`, `rg` ou un équivalent de recherche textuelle tant

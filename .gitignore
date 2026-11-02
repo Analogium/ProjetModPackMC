@@ -36,12 +36,9 @@ bin/
 run/
 !**/src/**/run/
 **/src/generated/**/.cache/
-repo/
-!**/src/**/repo/
 
 ### AI tooling ###
 /.env
-/.codex/
-/.claude/docs/
 /.claude/settings.local.json
 /.codegraph/
+/.codegraph-wsl/

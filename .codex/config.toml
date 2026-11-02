@@ -1,0 +1,12 @@
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[mcp_servers.codegraph]
+# node lance codegraph via le shell du système (cmd sous Windows, sh ailleurs).
+command = "node"
+args = ["-e", "require('child_process').spawn('codegraph serve --mcp',{stdio:'inherit',shell:true}).on('exit',c=>process.exit(c??1))"]
+startup_timeout_sec = 60
+
+[mcp_servers.minestrator]
+url = "https://mcp.sttr.io/minestrator"
+bearer_token_env_var = "MINESTRATOR_API_KEY"

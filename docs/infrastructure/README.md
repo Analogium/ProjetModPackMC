@@ -26,24 +26,42 @@ appel en lecture seule à `list_servers`. Aucun déploiement n'a été effectué
 
 ## Intégration continue
 
-[Build](../../.github/workflows/build.yml) s'exécute à chaque push et pull
-request : checkout, installation de Temurin 21, préparation de Gradle et
-`./gradlew build`. Un résultat vert confirme le build ; aucun test automatisé
-de gameplay n'est présent. La validation en jeu reste distincte.
+[Build](../../.github/workflows/build.yml) s'exécute à chaque push sur une
+branche (pas sur les tags) : checkout, Temurin 21, Gradle, puis
+`./gradlew build runGameTestServer`. Le jar est publié comme artefact
+`moddevarpg-jar` du run, conservé 14 jours. Une PR interne affiche le résultat
+du push de sa branche ; il n'y a pas de déclencheur `pull_request` séparé,
+donc une PR venant d'un fork n'est pas compilée.
+
+Un résultat vert confirme le build et le passage des gametests, dont
+`moddevarpg:mod_loads` qui vérifie le chargement du mod sur un serveur
+dédié de test. Ce n'est pas une validation de gameplay.
 
 ## Déploiement par GitHub Actions
 
-[Deploy dev server](../../.github/workflows/deploy-dev.yml) s'exécute sur un
-push vers `main` ou manuellement avec `workflow_dispatch` :
+[Deploy dev server](../../.github/workflows/deploy-dev.yml) s'exécute
+automatiquement au push d'un tag `v*`, ou manuellement avec `workflow_dispatch` :
 
-1. Récupération de la révision et compilation avec Java 21 et Gradle.
-2. Sélection du jar dans `build/libs/`, hors sources et Javadoc.
-3. Installation de `lftp` et transfert SFTP vers `mods/ModDevARPG.jar`.
-4. Demande de redémarrage par l'API Minestrator.
+1. Pour un tag : vérification que le tag vaut `v` + `mod_version` de
+   `gradle.properties`, sinon arrêt avant tout envoi.
+2. Compilation et gametests (`./gradlew build runGameTestServer`) : un échec
+   arrête le déploiement.
+3. Sélection du jar dans `build/libs/`, hors sources et Javadoc.
+4. Envoi SFTP vers `mods/ModDevARPG.jar.tmp`, puis renommages : l'ancien
+   `ModDevARPG.jar` devient `ModDevARPG.jar.prev` (non chargé par NeoForge) et
+   le `.tmp` devient `ModDevARPG.jar`.
+5. Demande de redémarrage par l'API Minestrator.
 
-Le nom fixe remplace le jar précédent. Le workflow ne déploie pas les mondes,
-les configurations ni d'autres mods. Il reconstruit le mod lui-même et ne
-dépend pas du résultat du workflow `Build`, qui s'exécute séparément.
+Publier une version :
+
+```sh
+# Après avoir mis à jour mod_version dans gradle.properties et fusionné sur main
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+Le workflow ne déploie pas les mondes, les configurations ni d'autres mods.
+Il reconstruit le mod lui-même et ne dépend pas du workflow `Build`.
 
 `jobs.deploy.timeout-minutes: 5` limite l'exécution du job complet, préparation,
 build, transfert et demande de redémarrage compris. Le temps en file d'attente
@@ -51,12 +69,21 @@ n'est pas un temps d'exécution du job. À l'expiration, GitHub annule le job ;
 ce mécanisme ne garantit pas que le serveur soit prêt à accueillir les joueurs
 en cinq minutes. Voir la [référence GitHub Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idtimeout-minutes).
 
-La concurrence existante utilise le groupe `deploy-dev` avec
-`cancel-in-progress: true` : un nouveau déploiement peut annuler le précédent.
-Une annulation ou un timeout ne restaure pas le jar précédent et n'annule pas
-une demande de redémarrage déjà envoyée. Le transfert actuel écrit directement
-le fichier cible ; une interruption pendant l'envoi peut laisser un jar
-incomplet. Il n'existe ni rollback ni contrôle automatique de disponibilité.
+La concurrence utilise le groupe `deploy-dev` avec `cancel-in-progress: false` :
+un nouveau déploiement attend la fin du précédent au lieu de l'annuler.
+Une interruption pendant l'envoi laisse au pire un `.tmp` incomplet ; le jar
+actif n'est remplacé qu'une fois l'envoi terminé. Un timeout n'annule pas une
+demande de redémarrage déjà envoyée.
+
+Retour manuel à la version précédente : sur le serveur, renommer
+`ModDevARPG.jar.prev` en `ModDevARPG.jar` (après avoir retiré le jar fautif),
+puis redémarrer. Le workflow ne contrôle pas la disponibilité du serveur après
+le redémarrage : aucun point d'accès d'état de l'API Minestrator n'a été vérifié.
+
+Séquence SFTP vérifiée le 2 novembre 2026 contre un serveur OpenSSH local
+(lftp 4.8.4, authentification par clé) : premier envoi, rotation `.prev` sur
+deux envois suivants, et échec d'envoi sans modification du jar actif (code de
+sortie 1). Le serveur SFTP de Minestrator n'a pas été testé.
 
 ### Configuration GitHub
 
@@ -112,8 +139,7 @@ validation d'un déploiement réel reste à réaliser dans une intervention auto
 ### Configuration locale du MCP
 
 Le serveur officiel utilise `https://mcp.sttr.io/minestrator` en HTTP.
-[.claude/config.toml](../../.claude/config.toml), également accessible par
-`.codex/config.toml`, configure Codex avec `bearer_token_env_var`.
+[.codex/config.toml](../../.codex/config.toml) configure Codex avec `bearer_token_env_var`.
 [.mcp.json](../../.mcp.json) configure Claude Code avec la même variable
 `MINESTRATOR_API_KEY`. Aucun secret n'est enregistré dans ces fichiers.
 

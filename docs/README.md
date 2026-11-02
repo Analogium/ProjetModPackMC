@@ -8,9 +8,9 @@ depuis [CLAUDE.md](../CLAUDE.md).
 ## Utilisation de l'index par les agents
 
 Cet index est le point d'accès à la documentation du projet. Au début d'une
-tâche, consulter `init.md`, les guidelines ci-dessous, puis les recommandations
-pertinentes. Suivre les liens et lire les documents concernés avant de prendre
-des décisions ou de modifier le projet, selon les règles d'`AGENTS.md`.
+tâche, lire `init.md`, puis seulement les documents ci-dessous utiles à la
+tâche, avant de prendre des décisions ou de modifier le projet, selon les
+règles d'`AGENTS.md`.
 
 CodeGraph complète cette lecture pour l'exploration du code ; il ne remplace
 pas l'index documentaire. Lire directement les fichiers Markdown référencés.
@@ -45,41 +45,32 @@ via un sous-index ; maintenir les liens lors des déplacements et suppressions.
 ## Infrastructure
 
 - [Hébergement, CI et déploiement](infrastructure/README.md) : Git/GitHub,
-  serveur Minestrator, déploiement GitHub Actions limité à cinq minutes et
+  serveur Minestrator, déploiement GitHub Actions par tag de version, limité à cinq minutes, et
   voie alternative par le MCP Minestrator.
 - [Configuration locale du MCP Minestrator](infrastructure/README.md#configuration-locale-du-mcp) :
   clé dans `.env` ignoré par Git, chargement PowerShell et vérification.
 
-## Dossiers partagés
+## Dossiers des outils IA
 
 - [Permissions locales de Codex et Claude](permissions-ia.md) : listes
   d'autorisation des commandes courantes, confirmations et activation.
 
 ```text
-.claude/                  Dossier de référence pour les deux agents
-  config.toml             Configuration MCP de Codex
-  docs/ -> ../docs/       Documentation partagée
-.codex/ -> .claude/        Même contenu, sans copie ni lien réciproque
-docs/                     Originaux de la documentation partagée
-.mcp.json                 Configuration MCP de Claude Code
+AGENTS.md                 Consignes communes (lu nativement par Codex)
+CLAUDE.md                 Importe AGENTS.md pour Claude Code
+.claude/settings.json     Permissions de Claude Code
+.mcp.json                 Serveurs MCP de Claude Code
+.codex/config.toml        Serveurs MCP et mode d'approbation de Codex
+.codex/rules/             Permissions de Codex
+docs/                     Documentation partagée
 ```
 
-Sous Windows, les liens sont des **jonctions de dossiers**, car les liens
-symboliques demandent ici des privilèges administrateur. Les jonctions ne sont
-pas versionnées : après un clone, exécuter depuis la racine du dépôt :
-
-```powershell
-.\scripts\setup-ai.ps1
-```
-
-Le script peut être relancé ; il vérifie les destinations et ne remplace aucun
-dossier existant. Il doit aussi être relancé après déplacement du dépôt ; dans
-ce cas, un ancien lien qui pointe ailleurs doit d'abord être retiré manuellement
-sans supprimer sa destination.
-
-Modifier les documents dans `docs/` : ils sont immédiatement visibles dans
-`.claude/docs/` et `.codex/docs/`. Les fichiers propres à un agent peuvent
-coexister dans `.claude/` ; chaque agent lit son format de configuration.
+Tous ces fichiers sont versionnés : aucun lien ni script n'est nécessaire
+après un clone. Les réglages personnels vont dans `.claude/settings.local.json`,
+ignoré par Git. Un ancien clone qui contient encore les jonctions `.codex` ou
+`.claude/docs` créées par l'ancien script doit les supprimer avant de récupérer
+cette version (`rmdir .codex` et `rmdir .claude\docs` sous Windows : supprime
+le lien, pas sa destination).
 
 ## CodeGraph
 
@@ -87,27 +78,29 @@ Outil : [@colbymchenry/codegraph](https://github.com/colbymchenry/codegraph),
 version vérifiée **1.6.2**. Le programme est installé sur le compte utilisateur ;
 les configurations MCP et l'index restent propres à ce projet.
 
-Installation sur une nouvelle machine Windows, avec Node.js/npm disponibles :
+Installation sur une nouvelle machine, avec Node.js/npm disponibles
+(sous PowerShell, écrire `npm.cmd` au lieu de `npm`) :
 
-```powershell
-npm.cmd install --global @colbymchenry/codegraph@1.6.2
+```sh
+npm install --global @colbymchenry/codegraph@1.6.2
 # Ouvrir un nouveau terminal si codegraph n'est pas encore dans le PATH.
 codegraph init --yes
 codegraph status --json
 codegraph query ModDevARPG --json
 ```
 
-Les configurations livrées utilisent `cmd /d /c codegraph serve --mcp` pour
-lancer correctement le programme npm sous Windows. Sur Linux/macOS, utiliser
-`command = "codegraph"` et `args = ["serve", "--mcp"]` dans le TOML, et les
-valeurs équivalentes dans `.mcp.json`.
+Les configurations livrées sont identiques sur tous les systèmes : `node`
+lance `codegraph serve --mcp` via le shell du système (`cmd` sous Windows,
+`sh` ailleurs), ce qui résout le script npm `codegraph.cmd` sous Windows.
+Seuls `node` et `codegraph` doivent être dans le PATH ; aucune adaptation
+par système n'est nécessaire.
 
 Redémarrer Claude Code et Codex pour charger le serveur MCP. Dans Claude,
 approuver le serveur du projet lorsqu'il le demande, puis vérifier `/mcp`.
 Codex ne charge `.codex/config.toml` que pour un projet approuvé ; vérifier
 `codex mcp list` depuis ce dépôt et `/mcp` dans une nouvelle session.
 
-L'index généré `.codegraph/` est ignoré par Git. Pendant une session MCP, le
+L'index généré `.codegraph/` (`.codegraph-wsl/` sous WSL) est ignoré par Git. Pendant une session MCP, le
 serveur surveille les changements. Hors session, `codegraph sync` actualise
 l'index ; `codegraph index` le reconstruit. Aucun accès au serveur Minecraft
 n'est nécessaire.
@@ -125,3 +118,20 @@ une requête réelle. Claude Code n'est pas installé sur cette machine : sa
 configuration JSON a été contrôlée et sa commande de lancement testée via MCP.
 Le build Gradle et le jeu n'ont pas été lancés pour cette modification de
 documentation et d'outillage.
+
+Le 2 novembre 2026, sous WSL (Linux) avec Claude Code : CodeGraph 1.6.2
+installé, index de 7 fichiers, 78 nœuds et 100 relations dans `.codegraph-wsl/`.
+Le lanceur `node` commun a répondu à `initialize`, exposé `codegraph_explore`
+et s'est arrêté à la fermeture de stdin sans processus orphelin.
+
+Le même jour, sous Windows natif (Node 22.14 portable, CodeGraph 1.6.2) : index
+`.codegraph/` créé, lanceur `node` de `.mcp.json` validé (`initialize`,
+`codegraph_explore` listé, appel réel trouvant `ModDevARPG.java`).
+Sous Windows, le processus serveur de CodeGraph reste actif après la
+déconnexion du client, avec l'ancien lanceur `cmd /d /c` comme avec le
+nouveau : c'est un comportement de CodeGraph, pas du lanceur.
+`gradlew.bat build` réussit après le passage de `gradlew.bat` en CRLF.
+
+Ces vérifications concernent l'ancienne organisation : jonctions `.codex` et
+`.claude/docs`, script `setup-ai.ps1` et trois fichiers Java. Le passage aux
+dossiers `.claude/` et `.codex/` versionnés n'a pas été revérifié dans Codex.
